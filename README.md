@@ -9,5 +9,5 @@ Things I learnt include:
 * how to read ERDs (entity relationship diagrams)
 * creating and inserting into tables
 * updating and deleting entries
-* querying data (JOINs, aggregate functions) and query formulation guidelines
-* how to use TRIGGERs as a workaround to MYSQL infamously not supporting CHECK constraints (and not throwing any warnings or errors too...)
+* querying data (`JOIN`s, aggregate functions) and query formulation guidelines
+* how to use `TRIGGER`s as a workaround to MySQL infamously not supporting `CHECK` constraints (and not throwing any warnings or errors too...)
