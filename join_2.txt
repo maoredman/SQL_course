@@ -1,0 +1,79 @@
+SELECT Statement Problems
+
+1. For event requests, list the event number, event date (eventrequest.dateheld), and count of the event plans.  Only include event requests in the result if the event request has more than one related event plan with a work date in December 2018.
+
+SELECT EVENTREQUEST.EVENTNO, DATEHELD, COUNT(*)
+FROM EVENTREQUEST INNER JOIN EVENTPLAN ON EVENTREQUEST.EVENTNO = EVENTPLAN.EVENTNO
+WHERE year(WORKDATE) = 2018
+	AND month(WORKDATE) = 12
+GROUP BY EVENTREQUEST.EVENTNO;
+
+2.	List the plan number, event number, work date, and activity of event plans meeting the following two conditions: (1) the work date is in December 2018 and (2) the event is held in the “Basketball arena”.  Your query must not use the facility number (“F101”) of the basketball arena in the WHERE clause. Instead, you should use a condition on the FacName column for the value of “Basketball arena”.
+
+SELECT PLANNO, EVENTPLAN.EVENTNO, WORKDATE, ACTIVITY
+FROM EVENTPLAN INNER JOIN EVENTREQUEST ON EVENTPLAN.EVENTNO = EVENTREQUEST.EVENTNO
+	INNER JOIN FACILITY ON FACILITY.FACNO = EVENTREQUEST.FACNO
+WHERE year(WORKDATE) = 2018
+	AND month(WORKDATE) = 12
+	AND FACNAME='Basketball arena';
+
+3.	List the event number, event date, status, and estimated cost of events where there is an event plan managed by Mary Manager and the event is held in the basketball arena in the period October 1 to December 31, 2018.  Your query must not use the facility number (“F101”) of the basketball arena or the employee number (“E101”) of “Mary Manager” in the WHERE clause. Thus, the WHERE clause should not have conditions involving the facility number or employee number compared to constant values.
+
+SELECT EVENTREQUEST.EVENTNO, EVENTREQUEST.DATEHELD, EVENTREQUEST.STATUS, EVENTREQUEST.ESTCOST
+FROM EVENTREQUEST INNER JOIN EVENTPLAN ON EVENTREQUEST.EVENTNO = EVENTPLAN.EVENTNO
+	INNER JOIN EMPLOYEE ON EVENTPLAN.EMPNO = EMPLOYEE.EMPNO
+	INNER JOIN FACILITY ON EVENTREQUEST.FACNO = FACILITY.FACNO
+WHERE EMPLOYEE.EMPNAME = 'Mary Manager'
+	AND FACILITY.FACNAME = 'Basketball arena'
+	AND EVENTREQUEST.DATEHELD BETWEEN '2018-10-01' AND '2018-12-31';
+
+4.	List the plan number, line number, resource name, number of resources (eventplanline.number), location name, time start, and time end where the event is held at the basketball arena, the event plan has activity of activity of “Operation”, and the event plan has a work date in the period October 1 to December 31, 2018.  Your query must not use the facility number (“F101”) of the basketball arena in the WHERE clause. Instead, you should use a condition on the FacName column for the value of “Basketball arena”.
+
+SELECT EVENTPLANLINE.PLANNO, EVENTPLANLINE.LINENO, RESOURCETBL.RESNAME, EVENTPLANLINE.NUMBERFLD, LOCATION.LOCNAME,
+	EVENTPLANLINE.TIMESTART, EVENTPLANLINE.TIMEEND
+FROM EVENTPLANLINE INNER JOIN LOCATION ON EVENTPLANLINE.LOCNO = LOCATION.LOCNO
+	INNER JOIN RESOURCETBL ON EVENTPLANLINE.RESNO = RESOURCETBL.RESNO
+	INNER JOIN FACILITY ON LOCATION.FACNO = FACILITY.FACNO
+	INNER JOIN EVENTPLAN ON EVENTPLAN.PLANNO = EVENTPLANLINE.PLANNO
+WHERE FACILITY.FACNAME = 'Basketball arena'
+	AND EVENTPLAN.ACTIVITY = 'Operation'
+	AND EVENTPLAN.WORKDATE BETWEEN '2018-10-01' AND '2018-12-31';
+
+Database Modification Problems
+1.	Insert a new row into the Facility table with facility name “Swimming Pool”.
+
+Insert into FACILITY (FACNO,FACNAME)
+values ('F999', 'Swimming Pool');
+
+2.	Insert a new row in the Location table related to the Facility row in modification problem 1. The new row should have “Door” for the location name.
+
+Insert into LOCATION (LOCNO,FACNO,LOCNAME)
+values ('L999','F999','Door');
+
+SELECT FACILITY.FACNO, FACILITY.FACNAME, LOCATION.LOCNAME
+FROM LOCATION INNER JOIN FACILITY ON FACILITY.FACNO = LOCATION.FACNO
+WHERE FACNAME='Swimming Pool';
+
+3.	Insert a new row in the Location table related to the Facility row in modification problem 1. The new row should have “Locker Room” for the location name.
+
+Insert into LOCATION (LOCNO,FACNO,LOCNAME)
+values ('L998','F999','Locker Room');
+
+4.	Change the location name of “Door” to “Gate” for the row inserted in modification problem 2.
+
+UPDATE LOCATION 
+SET LOCNAME = 'Gate'
+WHERE LOCNAME = 'Door';
+
+5.	Delete the row inserted in modification problem 3.
+
+SET SQL_SAFE_UPDATES = 0;
+
+DELETE FROM LOCATION 
+WHERE LOCNO = 'L998';
+
+SET SQL_SAFE_UPDATES = 1;
+
+# note: there are multiple entries with LOCNAME='Locker Room', so we have to use other conditions
+
+
